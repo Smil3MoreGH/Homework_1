@@ -1,0 +1,67 @@
+Die ist meine Erklärung was ich gemacht habe.
+Alle entschlüsselten Dateien sowie die aufgabenstellung und alles weitere befinden sich hier in der Abgabe_Paul_Hartung.zip
+Verwendete DOkumentationen und weiteres sind in dem python code dateien.
+
+# Homework_1.py
+ALs erstes habe ich Homework_1 erstellt um mir das Bild password.rgba einmal anzuschauen.
+Wie in der Vorlesung gezeigt ist es nämlich nicht sinnvoll ein Bild mit AES-ECB zu verschlüsseln, da die Informationen immernoch sichtbar sind beim auslesen.
+
+# Homework_1_2.py
+Dann habe ich versucht die Zip zu entschlüsseln mit den drei genannten modi in der Aufgabenstellung: "CBC, OFB, oder CFB"
+Für das PW habe ich wie in der dtaie beschrieben Duck, duck Ente oder ente benutzt.
+Für die IV habe ich eine simple:
+
+# Initialisierungsvektor (IV), der auch 128 Bit (16 Bytes) lang sein muss!
+iv = b'\x00' * 16
+
+gewählt, dies hat dann auch geklappt.
+
+Dann habe ich gesehen das es ein Aufgabenblatt 2 gibt :D
+
+# Inner_Homework_1.py
+Da wir einen AES ECB 128 haben, und eine sehr genaues schlüsselenhancement bekommen haben, habe ich geschut wie viele unterschiedliche
+Möglichkeiten übrig bleiben, wenn man alle bytecombinationen einfach auf die formel anwendet:
+
+# XOR mit 0xFF: Diese Operation invertiert jedes Bit des Schlüssels. Wenn ein Bit ursprünglich 1 war, wird es zu 0 und andersherum.
+# UND mit 60: Die binäre Darstellung von 60 ist 0011 1100. Diese Operation setzt alle Bits außer den vier Bits in der Mitte auf 0. Nur die Bits 3, 4, 5 und 6 können Einsen sein.
+# ODER mit 0x81: Die binäre Darstellung von 0x81 ist 1000 0001. Diese Operation setzt das höchste und das niedrigste Bit im Byte auf 1, unabhängig von ihrem vorherigen Zustand.
+# Linksverschiebung um 5: Bei dieser Operation werden alle Bits um fünf Stellen nach links verschoben. Das bedeutet, dass die oberen fünf Bits verloren gehen und die unteren fünf Bits auf Null gesetzt werden.
+
+diese habe ich dann ausgeben lassen und folgende ergebnisse bekommen:
+Gültige Schlüsselbytes:
+0xA0
+0x20
+Anzahl der eindeutigen gültigen Schlüsselbytes: 2
+
+# Inner_Homework_1_2.py
+
+Mit den nun gewonnenen gültige Schlüsselbytes habe ich dann alle möglichen schlüssel generiert.
+Da es nur zwei gültige Schlüsselbytes gibt und AES-128 16 Bytes für den Schlüssel benötigt,
+gibt es 2^16 mögliche Kombinationen dieser Bytes, um einen vollständigen Schlüssel zu bilden.
+Dies ist eine erhebliche Verringerung im Vergleich zu den 2^128 möglichen Schlüsseln,
+die ohne diese Einschränkungen zur Verfügung stünden.
+
+Und um nich alle darauf enwendun zu müssen habe ich dann geschaut welchen header wav dateien haben:
+
+def check_wav_header(data):
+    # So sieht eine .wav header typischerweise aus. (Quelle: https://docs.fileformat.com/audio/wav/)
+    return data[:4] == b'RIFF' and data[8:12] == b'WAVE'
+
+So kann ich also überprüfen ob eine wav datei richtig generiert wurde mit dem schlüssel,
+wenn ja: dann ist schlüssel richtig
+wenn nicht genu der header: dann ist der schlüssel falsch gewesen.
+
+SO habe ich dann den richtigen schlüssel gefunden "a0a0a0a0a0a0a0a020a020a0a0a020a0"
+und alle Dateien entschlüsselt und abgespeichet.
+
+# Inner_Homework_1_3.py
+
+Jetzt muss ich nur noch ein X.509-Zertifikat aus einer PEM-Datei laden,
+um den für die Signaturprüfung erforderlichen öffentlichen Schlüssel zu extrahieren.
+Die aus der Aufgabe HEX-kodierte Signatur wird dann in Bytes umgewandelt.
+
+Und dann kann ich auf den eben entschlüsselten Ordner auf alle audio dateien die Signatur verifizieren.
+
+Zuvor muss noch das aus 1_2 erstelle Nullbyte padding wieder entfert werden und dann kann man die richtige Signatur lesen.
+
+Lösung der Flag ist also Audiodatei nummer: "file_62.wav" welche das Lösungswort: "Surveillance" beinhaltet.
